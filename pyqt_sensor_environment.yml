@@ -1,0 +1,34 @@
+name: pyqt_sensor
+channels:
+  - defaults
+dependencies:
+  - blas=1.0
+  - ca-certificates=2021.10.26
+  - certifi=2021.10.8
+  - icu=58.2
+  - intel-openmp=2021.4.0
+  - jpeg=9d
+  - libpng=1.6.37
+  - mkl=2021.4.0
+  - mkl-service=2.4.0
+  - mkl_fft=1.3.1
+  - mkl_random=1.2.2
+  - numpy=1.21.2
+  - numpy-base=1.21.2
+  - openssl=1.1.1l
+  - pip=21.2.4
+  - pyqt=5.9.2
+  - pyqtgraph=0.11.0
+  - python=3.9.5
+  - qt=5.9.7
+  - setuptools=58.0.4
+  - sip=4.19.13
+  - six=1.16.0
+  - sqlite=3.36.0
+  - tzdata=2021e
+  - vc=14.2
+  - vs2015_runtime=14.27.29016
+  - wheel=0.37.0
+  - wincertstore=0.2
+  - zlib=1.2.11
+prefix: C:\Users\brayd\anaconda3\envs\pyqt_sensor
