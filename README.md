@@ -10,5 +10,5 @@ When started in the command line, a trace and histogram will start producing val
 - Present in pyqt_sensor_environment.yaml file. Can use this environment using conda and the command below:
 - conda env create -f pyqt_sensor_environment.yml
 
-- Once the above environment is created, it will can be activated by typing the below command in conda:
+- Once the above environment is created, it can be activated by typing the below command in conda:
 - conda activate pyqt_sensor
