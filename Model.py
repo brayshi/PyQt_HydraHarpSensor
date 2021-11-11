@@ -66,6 +66,7 @@ class Model(QObject):
             # this is 256 ps
             self.hist.bin_size_picoseconds_next = 256
 
+    # called by QTimer in PyQt_Application every 1 ms. Tails inputfile and saves its contents into circular buffer
     def frameData(self):
         global message_window_on
         while True:
@@ -86,17 +87,23 @@ class Model(QObject):
         if self.buffer:
             self.update()
 
+    # Called after frameData gets to End-of-File (EOF). Processes 4-byte integers using bitwise operations.
+    # Reads both overflows and photon channel signals. When a specific amount of overflows is obtained in total,
+    # emit a signal for the view to update its contents
     def update(self):
+        # the start and end ranges for the fret signals. Only updates between view changes
         DA_start = self.trace._DA_range[0]
         DA_end = self.trace._DA_range[1]
 
         while self.buffer:
+            # reads buffer value and does bitwise operations to find the necessary values
             recordData = self.buffer.popleft()
             special = recordData >> 31
             channel = (recordData >> 25) & 63
             dtime = (recordData >> 10) & 32767
             nsync = recordData & 1023
 
+            # the amount of overflows per bin
             trace_overflow = OVERFLOW_SECOND * self.trace.bin_size_milliseconds / CONVERT_SECONDS
             if special == 1:
                 if channel == 0x3F: # Overflow
@@ -109,9 +116,6 @@ class Model(QObject):
                 if self.ofl >= trace_overflow * np.prod(self.trace.period.shape): # once the overflow amount is over a threshold,
                     # add the values into the graph's lists
                     # draw new trace frame
-                    # self.red_trace.setData(self.trace.period, self.trace.red_line)
-                    # self.green_trace.setData(self.trace.period, self.trace.green_line)
-                    # instead of doing the above, signal to the view to update the above
                     self.graph_update.emit()
 
                     # reset the values, and finish the function call
@@ -129,11 +133,8 @@ class Model(QObject):
                         self.hist.bin_size_picoseconds = self.hist.bin_size_picoseconds_next
                         self.hist.change_hist()
 
-            else: # regular input channel to count 100 ms bins
-                # TODO
-                # check if the items are in the boxes.
-                # i.e. if the channel is red, check if it was excited within the green range of dtime
-                # add a 
+            else: # regular input channel
+                # calculate indexes that the photons should be placed into
                 trace_indx = int(self.ofl // trace_overflow)
                 hist_indx = int((dtime * self.hist.measDescRes * 1e12)//self.hist.bin_size_picoseconds)-1
 
@@ -141,7 +142,8 @@ class Model(QObject):
                     self.trace.green_line[trace_indx] += 1
                     self.hist.green_bins[hist_indx] += 1
                 elif int(channel) == RED:
-                    if (DA_start <= dtime and dtime <= DA_end) and self.trace._fret_on == True:
+                    # if the dtime is between the green range in the histogram, add to the fret instead of the red
+                    if DA_start <= dtime and dtime <= DA_end:
                         self.trace._fret_line[trace_indx] += 1
                     else:
                         self.trace.red_line[trace_indx] += 1

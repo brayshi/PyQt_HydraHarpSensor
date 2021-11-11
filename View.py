@@ -1,9 +1,7 @@
-import random
 from PyQt5.QtGui import QIntValidator
-from PyQt5.QtWidgets import QMainWindow, QLineEdit, QComboBox
+from PyQt5.QtWidgets import QMainWindow, QComboBox
 import pyqtgraph as pg
-from pyqtgraph.Qt import QtGui, QtCore
-import numpy as np
+from pyqtgraph.Qt import QtGui
 from Widgets import TextBox
 
 class View(QMainWindow):
@@ -88,48 +86,10 @@ class View(QMainWindow):
     def change_hist_height(self, value):
         self.hist.setYRange(0, int(value), padding=0)
 
+    # changes where the DA signal starts for calculating fret
     def DA_start(self):
         self._model.trace._DA_range[0] = self.green_start.value()/(self._model.measDescRes*1e9)
     
+    # changes where the DA signal ends for calculating fret
     def DA_end(self):
         self._model.trace._DA_range[1] = self.green_end.value()/(self._model.measDescRes*1e9)
-        
-class Graph:
-    def __init__(self):
-        self.maxLen = 1000 #max number of data points to show on graph
-        self.green_line = np.ones(self.maxLen, np.uint32, order='C')
-        self.red_line = np.ones(self.maxLen, np.uint32, order='C')
-        self.x = np.linspace(1, 100, num=self.maxLen)
-        self.app = QtGui.QApplication([])
-        self.win = QtGui.QWidget()
-       
-        self.trace = pg.PlotWidget()
-        self.green_trace = self.trace.plot(self.x, self.green_line, pen='g')
-        self.red_trace = self.trace.plot(self.x, self.green_line+1, pen='r')
-        self.trace.setYRange(0, 100, padding=0)
-    
-        self.layout = QtGui.QGridLayout()
-        self.win.setLayout(self.layout)
-
-        self.layout.addWidget(self.trace, 0, 0)
-        graphUpdateSpeedMs = 1
-        timer = QtCore.QTimer()#to create a thread that calls a function at intervals
-        timer.timeout.connect(self.update)#the update function keeps getting called at intervals
-        timer.start(graphUpdateSpeedMs)
-        self.win.show()
-        QtGui.QApplication.instance().exec_()
-       
-    def update(self):
-        self.green_line = np.roll(self.green_line, -1) #remove oldest
-        self.green_line[self.maxLen-1] = random.randint(0,100)
-        self.red_line = np.roll(self.red_line, -1)
-        self.red_line[self.maxLen-1] = random.randint(10, 40)
-
-        self.green_trace.setData(self.x, self.green_line)
-        self.red_trace.setData(self.x, self.red_line)
-        self.app.processEvents()
-
-       
-
-if __name__ == '__main__':
-    g = Graph()

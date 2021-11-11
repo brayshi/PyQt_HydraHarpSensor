@@ -1,4 +1,3 @@
-from PyQt5.QtCore import pyqtSignal
 import numpy as np
 
 # the amount of overflows needed for a 1 ms overflow update
@@ -7,12 +6,6 @@ HIST_BIN_AMOUNT = 2**15-1
 CONVERT_SECONDS = 1000
 
 class Trace():
-    trace_bin_size_changed = pyqtSignal(int)
-    trace_period_changed = pyqtSignal(int)
-    height_changed = pyqtSignal(int)
-    green_line_changed = pyqtSignal(int)
-    red_line_changed = pyqtSignal(int)
-
     @property
     def bin_size_milliseconds(self):
         return self._bin_size_milliseconds
@@ -52,7 +45,6 @@ class Trace():
     @height.setter
     def height(self, value):
         self._height = value
-        self.height_changed.emit(value)
     
     @property
     def period(self):
@@ -69,7 +61,6 @@ class Trace():
             self._green_line[np.prod(self._period.size)-1] += 1
         else:
             self._green_line[indx] += 1
-        self.green_line_changed.emit()
     
     @property
     def red_line(self):
@@ -82,7 +73,6 @@ class Trace():
             self._red_line[np.prod(self._period.size)-1] += 1
         else:
             self._red_line[indx] += 1
-        self.red_line_changed.emit()
 
     @property
     def fret_line(self):
@@ -115,10 +105,5 @@ class Trace():
         self._red_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)), dtype=np.uint32, order='C')
         self._fret_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)), dtype=np.uint32, order='C')
 
-        # fret variables
+        # fret range
         self._DA_range = [0, 2**15 - 1]
-
-        # these check if the traces will be used
-        self._green_on = True
-        self._red_on = True
-        self._fret_on = True

@@ -1,6 +1,6 @@
-from PyQt5.QtGui import QIntValidator
-from PyQt5.QtWidgets import QLineEdit, QComboBox
+from PyQt5.QtWidgets import QLineEdit
 
+# used to create text box with the correct properties
 class TextBox(QLineEdit):
     def __init__(self, validator, text, fn):
         super().__init__()

@@ -8,10 +8,12 @@ import sys
 class App(QApplication):
     def __init__(self, sys_argv):
         super(App, self).__init__(sys_argv)
+        # instantiate model and view. Show application window
         self.model = Model(sys_argv)
         self.view = View(self.model)
         self.view.win.show()
         
+        # start timer to call data from the file every 1 ms
         graphUpdateSpeedMs = 1
         self.timer = QtCore.QTimer(self) # to create a thread that calls a function at intervals
         self.timer.timeout.connect(self.model.frameData) # the update function keeps getting called at intervals
@@ -20,6 +22,7 @@ class App(QApplication):
 
         QtGui.QApplication.instance().exec_()
 
+    # used to update the view's trace and histogram plots. processes these events afterwards
     def view_graphs(self):
         self.view.green_trace.setData(self.model.trace.period, self.model.trace.green_line)
         self.view.red_trace.setData(self.model.trace.period, self.model.trace.red_line)
