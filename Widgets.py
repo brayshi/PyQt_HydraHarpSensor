@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QLineEdit
+import pyqtgraph as pg
 
 # used to create text box with the correct properties
 class TextBox(QLineEdit):

@@ -11,7 +11,6 @@ class App(QApplication):
         # instantiate model and view. Show application window
         self.model = Model(sys_argv)
         self.view = View(self.model)
-        self.view.win.show()
         
         # start timer to call data from the file every 1 ms
         graphUpdateSpeedMs = 1

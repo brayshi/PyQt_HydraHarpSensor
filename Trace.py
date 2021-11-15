@@ -106,4 +106,5 @@ class Trace():
         self._fret_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)), dtype=np.uint32, order='C')
 
         # fret range
-        self._DA_range = [0, 2**15 - 1]
+        self._DA_range = [1250, 8750]
+        self._fret_on = False

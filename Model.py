@@ -24,9 +24,6 @@ message_window_on = False
 # Controller can also notify the model to change. This will be sent to the trace and histogram classes to be worked on
 class Model(QObject):
     graph_update = pyqtSignal()
-    green_switch = pyqtSignal()
-    red_switch = pyqtSignal()
-    fret_switch = pyqtSignal()
 
     def __init__(self, sys_argv):
         super().__init__()
@@ -143,7 +140,7 @@ class Model(QObject):
                     self.hist.green_bins[hist_indx] += 1
                 elif int(channel) == RED:
                     # if the dtime is between the green range in the histogram, add to the fret instead of the red
-                    if DA_start <= dtime and dtime <= DA_end:
+                    if DA_start <= dtime and dtime <= DA_end and self.trace._fret_on == True:
                         self.trace._fret_line[trace_indx] += 1
                     else:
                         self.trace.red_line[trace_indx] += 1
