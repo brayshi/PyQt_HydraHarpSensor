@@ -46,7 +46,7 @@ background-color: rgb(30, 30, 30);</string>
          <string notr="true">color: rgb(255, 252, 246)</string>
         </property>
         <property name="text">
-         <string>Trace Period</string>
+         <string>Trace Period (ms)</string>
         </property>
        </widget>
       </item>
@@ -66,7 +66,7 @@ background-color: rgb(30, 30, 30);</string>
          <string notr="true">color: rgb(255, 252, 246);</string>
         </property>
         <property name="text">
-         <string>Trace Bin Size</string>
+         <string>Trace Bin Size (ms)</string>
         </property>
        </widget>
       </item>
@@ -118,7 +118,7 @@ background-color: rgb(30, 30, 30);</string>
          <string notr="true">color: rgb(255, 252, 246);</string>
         </property>
         <property name="text">
-         <string>Hist Bin Size</string>
+         <string>Hist Bin Size (ps)</string>
         </property>
        </widget>
       </item>
