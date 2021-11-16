@@ -14,12 +14,22 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(22, 23, 24);
+background-color: rgb(30, 30, 30);</string>
+   </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0" colspan="2">
      <widget class="PlotWidget" name="trace"/>
     </item>
     <item row="0" column="2" rowspan="2">
      <widget class="Line" name="line">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 255, 255);</string>
+      </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
@@ -32,6 +42,9 @@
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <widget class="QLabel" name="label">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 252, 246)</string>
+        </property>
         <property name="text">
          <string>Trace Period</string>
         </property>
@@ -39,6 +52,9 @@
       </item>
       <item>
        <widget class="QLabel" name="label_3">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 252, 246)</string>
+        </property>
         <property name="text">
          <string>Trace Height</string>
         </property>
@@ -46,6 +62,9 @@
       </item>
       <item>
        <widget class="QLabel" name="label_2">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 252, 246);</string>
+        </property>
         <property name="text">
          <string>Trace Bin Size</string>
         </property>
@@ -57,16 +76,27 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QLineEdit" name="tracePeriodLine">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(241, 241, 241);</string>
+        </property>
         <property name="maxLength">
          <number>4</number>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="traceAxisLine"/>
+       <widget class="QLineEdit" name="traceAxisLine">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(241, 241, 241);</string>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="traceBinCombo"/>
+       <widget class="QComboBox" name="traceBinCombo">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(241, 241, 241);</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -74,6 +104,9 @@
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
        <widget class="QLabel" name="label_4">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 252, 246);</string>
+        </property>
         <property name="text">
          <string>Hist Height</string>
         </property>
@@ -81,6 +114,9 @@
       </item>
       <item>
        <widget class="QLabel" name="label_5">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 252, 246);</string>
+        </property>
         <property name="text">
          <string>Hist Bin Size</string>
         </property>
@@ -88,6 +124,9 @@
       </item>
       <item>
        <widget class="QLabel" name="label_6">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 252, 246);</string>
+        </property>
         <property name="text">
          <string>FRET Toggle</string>
         </property>
@@ -98,13 +137,24 @@
     <item row="1" column="4">
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
-       <widget class="QLineEdit" name="histAxisLine"/>
+       <widget class="QLineEdit" name="histAxisLine">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(241, 241, 241);</string>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="histBinCombo"/>
+       <widget class="QComboBox" name="histBinCombo">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(241, 241, 241);</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="fretButton">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(241, 241, 241);</string>
+        </property>
         <property name="text">
          <string>OFF</string>
         </property>
