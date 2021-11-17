@@ -1,16 +1,23 @@
 from PyQt5 import uic
 from PyQt5.QtGui import QIntValidator
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QFileDialog, QMainWindow
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui
+
+from ReadFile import confirmHeader, readHeader
 
 class View(QMainWindow):
     def __init__(self, model):
         super(View, self).__init__()
         uic.loadUi('appwindow.ui', self)
+        self.show()
+        self.win = QtGui.QWidget()
+
         self._model = model
 
-        self.win = QtGui.QWidget()
+        self.create_view()
+
+    def create_view(self):
 
         # Trace Widget with green_line and red_line, with a set Y Range
         self.trace.setMouseEnabled(x=False, y=False)
@@ -69,8 +76,19 @@ class View(QMainWindow):
 
         self.fretButton.clicked.connect(self.change_fret_on)
 
-        self.show()
+        self.fileButton.clicked.connect(self.change_file)
 
+    # change file being tailed by model
+    def change_file(self):
+        file = QFileDialog.getOpenFileName(self, "Open PTU file", "This PC", "PTU files (*.ptu)")
+        self._model.inputFile = confirmHeader(file)
+        self._model.measDesc = readHeader(self._model.inputFile)
+        self._model.trace.change_traces()
+        self._model.hist.change_hist()
+        self.fileButton.setText(file[0])
+        self._model.graph_update.emit()
+
+    # if button is pressed, fret signal will be toggled on/off
     def change_fret_on(self):
         if self._model.trace._fret_on == True:
             self._model.trace._fret_on = False
@@ -79,19 +97,22 @@ class View(QMainWindow):
             self._model.trace._fret_on = True
             self.fretButton.setText("ON")
 
+    # change trace period that will be displayed for the next frame
     def change_trace_period(self):
         self._model.change_trace_period(self.tracePeriodLine.text())
-        
+    
+    # change trace graph's height
     def change_trace_height(self):
         self.trace.setYRange(0, int(self.traceAxisLine.text()), padding=0)
     
+    # change histogram's height
     def change_hist_height(self):
         self.hist.setYRange(0, int(self.histAxisLine.text()), padding=0)
 
     # changes where the DA signal starts for calculating fret
     def DA_start(self):
-        self._model.trace._DA_range[0] = self.green_start.value()/(self._model.measDescRes*1e9)
+        self._model.trace._DA_range[0] = (self.green_start.value()*1e-9)/self._model.measDescRes
     
     # changes where the DA signal ends for calculating fret
     def DA_end(self):
-        self._model.trace._DA_range[1] = self.green_end.value()/(self._model.measDescRes*1e9)
+        self._model.trace._DA_range[1] = (self.green_end.value()*1e-9)/self._model.measDescRes

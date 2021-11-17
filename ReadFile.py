@@ -30,13 +30,8 @@ rtMultiHarpT3    = struct.unpack(">i", bytes.fromhex('00010307'))[0]
 rtMultiHarpT2    = struct.unpack(">i", bytes.fromhex('00010207'))[0]
 
 # make the sys.argv stuff work with drag and drop
-def confirmHeader(sys_arg):
-    # if the command doesn't contain both Tail_PTU.py and the PTU file, the command will exit without an output
-    if len(sys_arg) != 2:
-        print("USAGE: Tail_PTU.py newFile.ptu")
-        exit(0)
-
-    inputfile = open(sys_arg[1], "rb")
+def confirmHeader(file):
+    inputfile = open(file[0], "rb")
 
     return inputfile
 

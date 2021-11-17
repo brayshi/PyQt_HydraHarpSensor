@@ -27,8 +27,8 @@ class Model(QObject):
 
     def __init__(self, sys_argv):
         super().__init__()
-        self.inputFile = ReadFile.confirmHeader(sys_argv) # this returns the opened up version of the file
-        self.measDescRes = ReadFile.readHeader(self.inputFile) # this reads the inputfile and gives a measDescRes while also reading up to EOF
+        self.inputFile = None # this returns the opened up version of the file
+        self.measDescRes = 4*1e-12 # this reads the inputfile and gives a measDescRes while also reading up to EOF
         self.trace = Trace()
         self.hist = Histogram(self.measDescRes)
         self.ofl = 0
@@ -66,7 +66,7 @@ class Model(QObject):
     # called by QTimer in PyQt_Application every 1 ms. Tails inputfile and saves its contents into circular buffer
     def frameData(self):
         global message_window_on
-        while True:
+        while self.inputFile:
             recordData = self.inputFile.read(256)
             if not recordData:
                 break

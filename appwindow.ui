@@ -28,7 +28,7 @@ background-color: rgb(30, 30, 30);</string>
        <bool>true</bool>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 255, 255);</string>
+       <string notr="true">background-color: rgb(50, 50, 51);</string>
       </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -132,6 +132,17 @@ background-color: rgb(30, 30, 30);</string>
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QLabel" name="label_7">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 252, 246);
+</string>
+        </property>
+        <property name="text">
+         <string>File Directory</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item row="1" column="4">
@@ -157,6 +168,16 @@ background-color: rgb(30, 30, 30);</string>
         </property>
         <property name="text">
          <string>OFF</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="fileButton">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(241, 241, 241);</string>
+        </property>
+        <property name="text">
+         <string>Select File</string>
         </property>
        </widget>
       </item>

@@ -86,6 +86,7 @@ class Trace():
         else:
             self._fret_line[indx] += 1
 
+    # change the traces if enough time has elapsed according to the overflow count
     def change_traces(self):
         self._period = np.arange(0, self.period_milliseconds / CONVERT_SECONDS, step=self.bin_size_milliseconds / CONVERT_SECONDS)
         self._green_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)), dtype=np.uint32, order='C')
