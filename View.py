@@ -3,8 +3,7 @@ from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QFileDialog, QMainWindow
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui
-
-from ReadFile import confirmHeader, readHeader
+import ReadFile
 
 class View(QMainWindow):
     def __init__(self, model):
@@ -81,8 +80,8 @@ class View(QMainWindow):
     # change file being tailed by model
     def change_file(self):
         file = QFileDialog.getOpenFileName(self, "Open PTU file", "This PC", "PTU files (*.ptu)")
-        self._model.inputFile = confirmHeader(file)
-        self._model.measDesc = readHeader(self._model.inputFile)
+        self._model.inputFile = ReadFile.confirmHeader(file)
+        self._model.measDesc = ReadFile.readHeader(self._model.inputFile)
         self._model.trace.change_traces()
         self._model.hist.change_hist()
         self.fileButton.setText(file[0])

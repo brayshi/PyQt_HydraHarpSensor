@@ -70,6 +70,16 @@ background-color: rgb(30, 30, 30);</string>
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QLabel" name="label_6">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 252, 246);</string>
+        </property>
+        <property name="text">
+         <string>FRET Toggle</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item row="1" column="1">
@@ -98,6 +108,16 @@ background-color: rgb(30, 30, 30);</string>
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QPushButton" name="fretButton">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(241, 241, 241);</string>
+        </property>
+        <property name="text">
+         <string>OFF</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item row="1" column="3">
@@ -119,16 +139,6 @@ background-color: rgb(30, 30, 30);</string>
         </property>
         <property name="text">
          <string>Hist Bin Size (ps)</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_6">
-        <property name="styleSheet">
-         <string notr="true">color: rgb(255, 252, 246);</string>
-        </property>
-        <property name="text">
-         <string>FRET Toggle</string>
         </property>
        </widget>
       </item>
@@ -158,16 +168,6 @@ background-color: rgb(30, 30, 30);</string>
        <widget class="QComboBox" name="histBinCombo">
         <property name="styleSheet">
          <string notr="true">background-color: rgb(241, 241, 241);</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="fretButton">
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(241, 241, 241);</string>
-        </property>
-        <property name="text">
-         <string>OFF</string>
         </property>
        </widget>
       </item>
