@@ -109,3 +109,4 @@ class Trace():
         # fret range
         self._DA_range = [1250, 8750]
         self._fret_on = False
+        self._fret_on_next = False

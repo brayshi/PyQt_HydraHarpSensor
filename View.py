@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QFileDialog, QMainWindow
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui
 import ReadFile
+from CoarseBinning import CoarseBinning
 
 class View(QMainWindow):
     def __init__(self, model):
@@ -23,17 +24,17 @@ class View(QMainWindow):
         self.green_trace = self.trace.plot(self._model.trace.period, self._model.trace.green_line, pen='g')
         self.red_trace = self.trace.plot(self._model.trace.period, self._model.trace.red_line, pen='r')
         self.fret_trace = self.trace.plot(self._model.trace.period, self._model.trace.fret_line, pen='b')
-        self.trace.setYRange(0, self._model.trace.height, padding=0.005)
-        self.trace.setLabels(title='Trace Graph', left='photons', bottom='time (ms)')
+        self.trace.setYRange(0, self._model.trace.height, padding=0)
+        self.trace.setLabels(title='Trace Graph', left='photons per bin', bottom='time (ms)')
 
         # Histogram Widget with green_hist and red_hist, with a set Y Range
         self.hist.setMouseEnabled(x=False, y=False)
         self.green_hist = self.hist.plot(self._model.hist._period, self._model.hist._green_bins, pen='g')
         self.red_hist = self.hist.plot(self._model.hist._period, self._model.hist._red_bins, pen='r')
         self.hist.getPlotItem().setLogMode(x=None, y=True)
-        self.hist.setYRange(0, 5, padding=0.01)
+        self.hist.setYRange(0, 5, padding=0)
         self.hist.setXRange(0, 75, padding=0)
-        self.hist.setLabels(title='Histogram', left='photons', bottom='time (ns)')
+        self.hist.setLabels(title='Histogram', left='photons per bin', bottom='time (ns)')
 
         # lines that can be moved to set DA and DD ranges
         self.green_start = pg.InfiniteLine(pos=5, angle=90, pen='g', movable=True, bounds=[0,75], hoverPen='b', label="g_start", name="green_start")
@@ -75,26 +76,66 @@ class View(QMainWindow):
 
         self.fretButton.clicked.connect(self.change_fret_on)
 
+        self.coarseTraceLine.setText("1800")
+        self.coarseTraceLine.setValidator(QIntValidator(1, 7200, self))
+
+        self.coarseTraceButton.clicked.connect(self.change_trace_graph)
+
         self.fileButton.clicked.connect(self.change_file)
+
+        self.resetCoarseButton.clicked.connect(self.reset_coarse_graph)
 
     # change file being tailed by model
     def change_file(self):
         file = QFileDialog.getOpenFileName(self, "Open PTU file", "This PC", "PTU files (*.ptu)")
         self._model.inputFile = ReadFile.confirmHeader(file)
-        self._model.measDesc = ReadFile.readHeader(self._model.inputFile)
+        self._model.hist._measDescRes = ReadFile.readHeader(self._model.inputFile)
         self._model.trace.change_traces()
         self._model.hist.change_hist()
         self.fileButton.setText(file[0])
-        self._model.graph_update.emit()
+        self._model.trace_update.emit()
+        self._model.hist_update.emit()
+        self.reset_coarse_graph()
 
     # if button is pressed, fret signal will be toggled on/off
     def change_fret_on(self):
-        if self._model.trace._fret_on == True:
-            self._model.trace._fret_on = False
+        if self._model.trace._fret_on_next == True:
+            self._model.trace._fret_on_next = False
             self.fretButton.setText("OFF")
         else:
-            self._model.trace._fret_on = True
+            self._model.trace._fret_on_next = True
             self.fretButton.setText("ON")
+
+    def change_trace_graph(self):
+        if self._model.coarse_on == False and int(self.coarseTraceLine.text()) > 0 and self._model.coarse_binning == None:
+            self._model.coarse_binning = CoarseBinning(int(self.coarseTraceLine.text()))
+            self._model.coarse_on = True
+            self.coarseTraceButton.setText("ON (running)")
+            self.trace.setLabels(title='Coarse Trace Graph', left='photons per 1 s bin', bottom='time (s)')
+            self._model.coarse_graph_update.emit()
+            self.trace.setXRange(0, self._model.coarse_binning._seconds, padding=0)
+        elif self._model.coarse_on == False:
+            self._model.coarse_on = True
+            self.coarseTraceButton.setText("ON (running)")
+            self.trace.setLabels(title='Coarse Trace Graph', left='photons per 1 s bin', bottom='time (s)')
+            self._model.coarse_graph_update.emit()
+            self.trace.setXRange(0, self._model.coarse_binning._seconds, padding=0)
+        elif self._model.coarse_on == True:
+            self._model.coarse_on = False
+            self.coarseTraceButton.setText("OFF (running)")
+            self.trace.setLabels(title='Trace Graph', left='photons per bin', bottom='time (ms)')
+            self._model.trace_update.emit()
+            self.trace.setXRange(0, int(self.tracePeriodLine.text())/1000, padding=0)
+
+    def reset_coarse_graph(self):
+        self._model.coarse_binning = None
+        self.coarseTraceButton.setText("OFF")
+        self._model.coarse_on = False
+        self._model.coarse_indx = 0
+        self._model.coarse_ofl = 0
+        self.trace.setLabels(title='Trace Graph', left='photons per bin', bottom='time (ms)')
+        self._model.trace_update.emit()
+        self.trace.setXRange(0, int(self.tracePeriodLine.text())/1000, padding=0)
 
     # change trace period that will be displayed for the next frame
     def change_trace_period(self):
@@ -110,8 +151,8 @@ class View(QMainWindow):
 
     # changes where the DA signal starts for calculating fret
     def DA_start(self):
-        self._model.trace._DA_range[0] = (self.green_start.value()*1e-9)/self._model.measDescRes
+        self._model.trace._DA_range[0] = (self.green_start.value()*1e-9)/self._model.hist._measDescRes
     
     # changes where the DA signal ends for calculating fret
     def DA_end(self):
-        self._model.trace._DA_range[1] = (self.green_end.value()*1e-9)/self._model.measDescRes
+        self._model.trace._DA_range[1] = (self.green_end.value()*1e-9)/self._model.hist._measDescRes

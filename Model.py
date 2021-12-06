@@ -1,4 +1,3 @@
-import ReadFile
 import numpy as np
 import struct
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -23,14 +22,21 @@ message_window_on = False
 # Every time the overflow is exceeded, emits a signal to the controller that this has happened. The controller then tells the view to update
 # Controller can also notify the model to change. This will be sent to the trace and histogram classes to be worked on
 class Model(QObject):
-    graph_update = pyqtSignal()
+    trace_update = pyqtSignal()
+    hist_update  = pyqtSignal()
+    coarse_graph_update = pyqtSignal()
 
-    def __init__(self, sys_argv):
+    def __init__(self):
         super().__init__()
         self.inputFile = None # this returns the opened up version of the file
-        self.measDescRes = 4*1e-12 # this reads the inputfile and gives a measDescRes while also reading up to EOF
         self.trace = Trace()
-        self.hist = Histogram(self.measDescRes)
+        self.hist = Histogram(4*1e-12)
+
+        self.coarse_binning = None
+        self.coarse_on = False
+        self.coarse_ofl = 0
+        self.coarse_indx = 0
+
         self.ofl = 0
         self.buffer = deque(maxlen=MAX_BUFFER_SIZE)
 
@@ -108,18 +114,31 @@ class Model(QObject):
                     # old style single overflow
                     if nsync == 0:
                         self.ofl += 1
+                        if (self.coarse_binning != None):
+                            self.coarse_ofl += 1
                     else:
                         self.ofl += nsync
+                        if (self.coarse_binning != None):
+                            self.coarse_ofl += nsync
+
+                if self.coarse_ofl >= OVERFLOW_SECOND:
+                    if (self.coarse_on == True):
+                        self.coarse_graph_update.emit()
+                    self.coarse_ofl = 0
+                    self.coarse_indx += 1
+
                 if self.ofl >= trace_overflow * np.prod(self.trace.period.shape): # once the overflow amount is over a threshold,
                     # add the values into the graph's lists
                     # draw new trace frame
-                    self.graph_update.emit()
+                    if (self.coarse_on == False):
+                        self.trace_update.emit()
+                    self.hist_update.emit()
 
                     # reset the values, and finish the function call
                     self.ofl = 0
                     DA_start = self.trace._DA_range[0]
                     DA_end = self.trace._DA_range[1]
-
+                    self.trace._fret_on = self.trace._fret_on_next
                     self.trace.period_milliseconds = self.trace.period_milliseconds_next
                     self.trace.bin_size_milliseconds = self.trace.bin_size_milliseconds_next
                     if self.trace.bin_size_milliseconds > self.trace.period_milliseconds:
@@ -135,13 +154,20 @@ class Model(QObject):
                 trace_indx = int(self.ofl // trace_overflow)
                 hist_indx = int((dtime * self.hist.measDescRes * 1e12)//self.hist.bin_size_picoseconds)-1
 
-                if int(channel) == GREEN:
+                if channel == GREEN:
                     self.trace.green_line[trace_indx] += 1
                     self.hist.green_bins[hist_indx] += 1
-                elif int(channel) == RED:
+                    if (self.coarse_binning != None):
+                        self.coarse_binning.green_line[self.coarse_indx] += 1
+                elif channel == RED:
                     # if the dtime is between the green range in the histogram, add to the fret instead of the red
-                    if DA_start <= dtime and dtime <= DA_end and self.trace._fret_on == True:
-                        self.trace._fret_line[trace_indx] += 1
+                    if DA_start <= dtime and dtime <= DA_end:
+                        if (self.trace._fret_on == True):
+                            self.trace._fret_line[trace_indx] += 1
+                        if (self.coarse_binning != None):
+                            self.coarse_binning.fret_line[self.coarse_indx] += 1
                     else:
                         self.trace.red_line[trace_indx] += 1
+                        if (self.coarse_binning != None):
+                            self.coarse_binning.red_line[self.coarse_indx] += 1
                     self.hist.red_bins[hist_indx] += 1

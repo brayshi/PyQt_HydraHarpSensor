@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication
 from pyqtgraph.Qt import QtCore, QtGui
+from CoarseBinning import CoarseBinning
 from Model import Model
 from View import View
 import sys
@@ -9,7 +10,7 @@ class App(QApplication):
     def __init__(self, sys_argv):
         super(App, self).__init__(sys_argv)
         # instantiate model and view. Show application window
-        self.model = Model(sys_argv)
+        self.model = Model()
         self.view = View(self.model)
         
         # start timer to call data from the file every 1 ms
@@ -17,18 +18,28 @@ class App(QApplication):
         self.timer = QtCore.QTimer(self) # to create a thread that calls a function at intervals
         self.timer.timeout.connect(self.model.frameData) # the update function keeps getting called at intervals
         self.timer.start(graphUpdateSpeedMs)
-        self.model.graph_update.connect(self.view_graphs)
+        self.model.trace_update.connect(self.view_trace)
+        self.model.hist_update.connect(self.view_hist)
+        self.model.coarse_graph_update.connect(self.view_coarse_graph)
 
         QtGui.QApplication.instance().exec_()
 
     # used to update the view's trace and histogram plots. processes these events afterwards
-    def view_graphs(self):
+    def view_trace(self):
         self.view.green_trace.setData(self.model.trace.period, self.model.trace.green_line)
         self.view.red_trace.setData(self.model.trace.period, self.model.trace.red_line)
         self.view.fret_trace.setData(self.model.trace.period, self.model.trace.fret_line)
+        self.processEvents()
 
+    def view_hist(self):
         self.view.green_hist.setData(self.model.hist._period, self.model.hist._green_bins)
         self.view.red_hist.setData(self.model.hist._period, self.model.hist._red_bins)
+        self.processEvents()
+
+    def view_coarse_graph(self):
+        self.view.green_trace.setData(self.model.coarse_binning.period[:self.model.coarse_indx], self.model.coarse_binning.green_line[:self.model.coarse_indx])
+        self.view.red_trace.setData(self.model.coarse_binning.period[:self.model.coarse_indx], self.model.coarse_binning.red_line[:self.model.coarse_indx])
+        self.view.fret_trace.setData(self.model.coarse_binning.period[:self.model.coarse_indx], self.model.coarse_binning.fret_line[:self.model.coarse_indx])
         self.processEvents()
 
 if __name__ == '__main__':
