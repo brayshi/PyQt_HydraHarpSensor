@@ -85,6 +85,8 @@ class View(QMainWindow):
 
         self.resetCoarseButton.clicked.connect(self.reset_coarse_graph)
 
+        self.coarseScaleButton.clicked.connect(self.scale_coarse_graph)
+
     # change file being tailed by model
     def change_file(self):
         file = QFileDialog.getOpenFileName(self, "Open PTU file", "This PC", "PTU files (*.ptu)")
@@ -120,12 +122,15 @@ class View(QMainWindow):
             self.trace.setLabels(title='Coarse Trace Graph', left='photons per 1 s bin', bottom='time (s)')
             self._model.coarse_graph_update.emit()
             self.trace.setXRange(0, self._model.coarse_binning._seconds, padding=0)
+            if (self._model.coarse_binning._scaling_on == True):
+                self.trace.setYRange(0, self._model.coarse_binning._max_height*1.2, padding=0)
         elif self._model.coarse_on == True:
             self._model.coarse_on = False
             self.coarseTraceButton.setText("OFF (running)")
             self.trace.setLabels(title='Trace Graph', left='photons per bin', bottom='time (ms)')
             self._model.trace_update.emit()
             self.trace.setXRange(0, int(self.tracePeriodLine.text())/1000, padding=0)
+            self.trace.setYRange(0, int(self.traceAxisLine.text()), padding=0)
 
     def reset_coarse_graph(self):
         self._model.coarse_binning = None
@@ -136,6 +141,16 @@ class View(QMainWindow):
         self.trace.setLabels(title='Trace Graph', left='photons per bin', bottom='time (ms)')
         self._model.trace_update.emit()
         self.trace.setXRange(0, int(self.tracePeriodLine.text())/1000, padding=0)
+
+    def scale_coarse_graph(self):
+        if (self._model.coarse_binning._scaling_on == False):
+            self.coarseScaleButton.setText("ON")
+            self._model.coarse_binning._scaling_on = True
+            self.trace.setYRange(0, self._model.coarse_binning._max_height*1.2, padding=0)
+        else:
+            self.coarseScaleButton.setText("OFF")
+            self._model.coarse_binning._scaling_on = False
+            self.trace.setYRange(0, int(self.traceAxisLine.text()), padding=0)
 
     # change trace period that will be displayed for the next frame
     def change_trace_period(self):

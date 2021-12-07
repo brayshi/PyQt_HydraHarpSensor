@@ -81,6 +81,8 @@ class CoarseBinning:
     def __init__(self, seconds):
         super().__init__()
         self._seconds = seconds
+        self._max_height = 0
+        self._scaling_on = True
         self._period = np.arange(0, seconds, step=1)
         self._green_line = np.zeros(seconds, dtype=np.uint32, order='C')
         self._red_line = np.zeros(seconds, dtype=np.uint32, order='C')
