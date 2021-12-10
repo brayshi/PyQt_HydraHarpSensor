@@ -37,6 +37,7 @@ def confirmHeader(file):
 
 def readHeader(inputfile):
     # if the PTU file isn't a PicoQuant PTU file, exit and print error
+    inputfile.seek(0)
     magic = inputfile.read(8).decode("utf-8").strip('\0')
     if magic != "PQTTTR":
         print("ERROR: Magic invalid, this is not a PTU file.")

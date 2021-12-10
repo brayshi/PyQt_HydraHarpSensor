@@ -92,11 +92,12 @@ class Trace():
         self._green_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)), dtype=np.uint32, order='C')
         self._red_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)), dtype=np.uint32, order='C')
         self._fret_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)), dtype=np.uint32, order='C')
+        self._max_height = 0
 
     def __init__(self):
         super().__init__()
 
-        self._height = 100 # the height of the graph
+        self._max_height = 0 # the max height of this graph
         self._period_milliseconds = 1000 # can only be in multiples of 100. i.e. 100, 200, 300, 400, ..., 900, 1000 (max)
         self._period_milliseconds_next = 1000 # the next period size in milliseconds that will be used
         self._bin_size_milliseconds = 1 # only 3 choices will be 1, 10, and 100 ms

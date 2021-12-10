@@ -28,6 +28,8 @@ class App(QApplication):
         self.view.green_trace.setData(self.model.trace.period, self.model.trace.green_line)
         self.view.red_trace.setData(self.model.trace.period, self.model.trace.red_line)
         self.view.fret_trace.setData(self.model.trace.period, self.model.trace.fret_line)
+        if (self.model._scaling_on == True):
+            self.view.trace.setYRange(0, self.model.trace._max_height*1.2, padding=0)
         self.processEvents()
 
     def view_hist(self):
@@ -39,9 +41,8 @@ class App(QApplication):
         self.view.green_trace.setData(self.model.coarse_binning.period[:self.model.coarse_indx], self.model.coarse_binning.green_line[:self.model.coarse_indx])
         self.view.red_trace.setData(self.model.coarse_binning.period[:self.model.coarse_indx], self.model.coarse_binning.red_line[:self.model.coarse_indx])
         self.view.fret_trace.setData(self.model.coarse_binning.period[:self.model.coarse_indx], self.model.coarse_binning.fret_line[:self.model.coarse_indx])
-        if (self.model.coarse_binning._max_height * 1.2 <= self.model.coarse_binning._green_line[self.model.coarse_indx] and self.model.coarse_binning._scaling_on == True):
-            self.model.coarse_binning._max_height = self.model.coarse_binning._green_line[self.model.coarse_indx]
-            self.view.trace.setYRange(0, self.model.coarse_binning._max_height, padding=0)
+        if (self.model._scaling_on == True):
+            self.view.trace.setYRange(0, self.model.coarse_binning._max_height*1.2, padding=0)
         self.processEvents()
 
 if __name__ == '__main__':

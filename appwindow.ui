@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>610</width>
+    <width>633</width>
     <height>331</height>
    </rect>
   </property>
@@ -51,6 +51,17 @@ background-color: rgb(30, 30, 30);</string>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <layout class="QGridLayout" name="gridLayout_4">
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="tracePeriodLine">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(241, 241, 241);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="maxLength">
+              <number>4</number>
+             </property>
+            </widget>
+           </item>
            <item row="2" column="1">
             <widget class="QLineEdit" name="traceAxisLine">
              <property name="styleSheet">
@@ -59,13 +70,14 @@ color: rgb(0, 0, 0);</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_3">
+           <item row="2" column="3">
+            <widget class="QPushButton" name="coarseTraceButton">
              <property name="styleSheet">
-              <string notr="true">color: rgb(255, 252, 246)</string>
+              <string notr="true">background-color: rgb(241, 241, 241);
+color: rgb(0, 0, 0);</string>
              </property>
              <property name="text">
-              <string>Trace Height</string>
+              <string>OFF</string>
              </property>
             </widget>
            </item>
@@ -79,32 +91,14 @@ color: rgb(0, 0, 0);</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="tracePeriodLine">
+           <item row="4" column="3">
+            <widget class="QPushButton" name="coarseScaleButton">
              <property name="styleSheet">
               <string notr="true">background-color: rgb(241, 241, 241);
 color: rgb(0, 0, 0);</string>
-             </property>
-             <property name="maxLength">
-              <number>4</number>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_2">
-             <property name="styleSheet">
-              <string notr="true">color: rgb(255, 252, 246);</string>
              </property>
              <property name="text">
-              <string>Trace Bin Size (ms)</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QComboBox" name="traceBinCombo">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(241, 241, 241);
-color: rgb(0, 0, 0);</string>
+              <string>OFF</string>
              </property>
             </widget>
            </item>
@@ -112,17 +106,6 @@ color: rgb(0, 0, 0);</string>
             <widget class="QLabel" name="label_8">
              <property name="text">
               <string>Coarse Trace Toggle</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="3">
-            <widget class="QPushButton" name="coarseTraceButton">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(241, 241, 241);
-color: rgb(0, 0, 0);</string>
-             </property>
-             <property name="text">
-              <string>OFF</string>
              </property>
             </widget>
            </item>
@@ -142,13 +125,23 @@ color: rgb(0, 0, 0);</string>
             </widget>
            </item>
            <item row="4" column="2">
-            <widget class="QLabel" name="label_10">
+            <widget class="QLabel" name="label_11">
              <property name="text">
-              <string>Reset Coarse Trace</string>
+              <string>Trace Auto-Scale</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="3">
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255, 252, 246)</string>
+             </property>
+             <property name="text">
+              <string>Trace Height</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3">
             <widget class="QPushButton" name="resetCoarseButton">
              <property name="styleSheet">
               <string notr="true">background-color: rgb(241, 241, 241);
@@ -156,6 +149,23 @@ color: rgb(0, 0, 0);</string>
              </property>
              <property name="text">
               <string>Reset</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2">
+            <widget class="QLabel" name="label_10">
+             <property name="text">
+              <string>Reset Coarse Trace</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255, 252, 246);</string>
+             </property>
+             <property name="text">
+              <string>Trace Bin Size (ms)</string>
              </property>
             </widget>
            </item>
@@ -169,6 +179,14 @@ color: rgb(0, 0, 0);</string>
              </property>
             </widget>
            </item>
+           <item row="3" column="1">
+            <widget class="QComboBox" name="traceBinCombo">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(241, 241, 241);
+color: rgb(0, 0, 0);</string>
+             </property>
+            </widget>
+           </item>
            <item row="4" column="1">
             <widget class="QPushButton" name="fretButton">
              <property name="styleSheet">
@@ -177,24 +195,6 @@ color: rgb(0, 0, 0);</string>
              </property>
              <property name="text">
               <string>OFF</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="2">
-            <widget class="QLabel" name="label_11">
-             <property name="text">
-              <string>Coarse Trace Auto-Scale</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="3">
-            <widget class="QPushButton" name="coarseScaleButton">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(241, 241, 241);
-color: rgb(0, 0, 0);</string>
-             </property>
-             <property name="text">
-              <string>ON</string>
              </property>
             </widget>
            </item>
@@ -217,22 +217,12 @@ color: rgb(0, 0, 0);</string>
        <item row="0" column="0">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <layout class="QFormLayout" name="formLayout_2">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_4">
-             <property name="styleSheet">
-              <string notr="true">color: rgb(255, 252, 246);</string>
-             </property>
-             <property name="text">
-              <string>Hist Height</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="histAxisLine">
+          <layout class="QGridLayout" name="gridLayout_5">
+           <item row="1" column="1">
+            <widget class="QComboBox" name="histBinCombo">
              <property name="styleSheet">
               <string notr="true">background-color: rgb(241, 241, 241);
-color: rgb(0, 0, 0)</string>
+color: rgb(0, 0, 0);</string>
              </property>
             </widget>
            </item>
@@ -246,11 +236,95 @@ color: rgb(0, 0, 0)</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QComboBox" name="histBinCombo">
+           <item row="2" column="3">
+            <widget class="QLabel" name="label_18">
+             <property name="text">
+              <string>NA</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255, 252, 246);</string>
+             </property>
+             <property name="text">
+              <string>Hist Height</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QPushButton" name="resetHistButton">
              <property name="styleSheet">
               <string notr="true">background-color: rgb(241, 241, 241);
 color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>Reset</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QLabel" name="donorCountsLabel_2">
+             <property name="text">
+              <string>0 counts/s</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QLabel" name="label_17">
+             <property name="text">
+              <string>0 counts/s</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2">
+            <widget class="QComboBox" name="donorColourBox">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(241, 241, 241);
+color: rgb(0, 0, 0);
+</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <widget class="QLabel" name="fretCountsLabel">
+             <property name="text">
+              <string>FRET Counts: </string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3">
+            <widget class="QComboBox" name="acceptorColourBox">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(241, 241, 241);
+color: rgb(0, 0, 0);</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="histAxisLine">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(241, 241, 241);
+color: rgb(0, 0, 0)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="fileButton">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(241, 241, 241);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>Select File</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QLabel" name="AcceptorCountsLabel">
+             <property name="text">
+              <string>Acceptor Counts: </string>
              </property>
             </widget>
            </item>
@@ -265,14 +339,24 @@ color: rgb(0, 0, 0);</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QPushButton" name="fileButton">
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(241, 241, 241);
-color: rgb(0, 0, 0);</string>
-             </property>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_12">
              <property name="text">
-              <string>Select File</string>
+              <string>Reset Histogram</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QLabel" name="donorCountsLabel">
+             <property name="text">
+              <string>Donor Counts: </string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_13">
+             <property name="text">
+              <string>TextLabel</string>
              </property>
             </widget>
            </item>

@@ -37,6 +37,8 @@ class Model(QObject):
         self.coarse_ofl = 0
         self.coarse_indx = 0
 
+        self._scaling_on = False
+
         self.ofl = 0
         self.buffer = deque(maxlen=MAX_BUFFER_SIZE)
 
@@ -114,19 +116,23 @@ class Model(QObject):
                     # old style single overflow
                     if nsync == 0:
                         self.ofl += 1
-                        if (self.coarse_binning != None):
+                        if (self.coarse_binning and self.coarse_binning._coarse_finished == False):
                             self.coarse_ofl += 1
                     else:
                         self.ofl += nsync
-                        if (self.coarse_binning != None):
+                        if (self.coarse_binning and self.coarse_binning._coarse_finished == False):
                             self.coarse_ofl += nsync
 
-                if self.coarse_ofl >= OVERFLOW_SECOND:
-                    if (self.coarse_on == True):
+                if (self.coarse_ofl >= OVERFLOW_SECOND and self.coarse_binning._coarse_finished == False):
+                    if (self.coarse_on == True):    
+                        if (self.coarse_binning._max_height * 1.2 <= self.coarse_binning._green_line[self.coarse_indx]):
+                            self.coarse_binning._max_height = self.coarse_binning._green_line[self.coarse_indx]
                         self.coarse_graph_update.emit()
                     self.coarse_ofl = 0
                     self.coarse_indx += 1
-
+                    if (self.coarse_indx >= self.coarse_binning._seconds):
+                        self.coarse_binning._coarse_finished = True
+                
                 if self.ofl >= trace_overflow * np.prod(self.trace.period.shape): # once the overflow amount is over a threshold,
                     # add the values into the graph's lists
                     # draw new trace frame
@@ -157,17 +163,19 @@ class Model(QObject):
                 if channel == GREEN:
                     self.trace.green_line[trace_indx] += 1
                     self.hist.green_bins[hist_indx] += 1
-                    if (self.coarse_binning != None):
+                    if (self.coarse_binning and self.coarse_indx < self.coarse_binning._seconds):
                         self.coarse_binning.green_line[self.coarse_indx] += 1
+                    if (self.trace.green_line[trace_indx] >= self.trace._max_height * 1.2):
+                        self.trace._max_height = self.trace.green_line[trace_indx]
                 elif channel == RED:
                     # if the dtime is between the green range in the histogram, add to the fret instead of the red
                     if DA_start <= dtime and dtime <= DA_end:
                         if (self.trace._fret_on == True):
                             self.trace._fret_line[trace_indx] += 1
-                        if (self.coarse_binning != None):
+                        if (self.coarse_binning and self.coarse_binning._coarse_finished == False):
                             self.coarse_binning.fret_line[self.coarse_indx] += 1
                     else:
                         self.trace.red_line[trace_indx] += 1
-                        if (self.coarse_binning != None):
+                        if (self.coarse_binning and self.coarse_binning._coarse_finished == False):
                             self.coarse_binning.red_line[self.coarse_indx] += 1
                     self.hist.red_bins[hist_indx] += 1
