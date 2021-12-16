@@ -33,6 +33,7 @@ class App(QApplication):
         if (self.model._scaling_on == True):
             self.view.trace.setYRange(0, self.model.trace._prev_max_height*1.2, padding=0)
         self.view.trace.setXRange(0, int(self.model.trace._period_milliseconds)/1000, padding=0)
+        self.view.trace.setLabels(title='Trace Graph', left='photons per ' + str(self.model.trace._bin_size_milliseconds) + ' ms bin', bottom='time (ms)')
         self.processEvents()
 
     def view_hist(self):

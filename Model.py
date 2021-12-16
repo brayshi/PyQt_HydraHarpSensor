@@ -1,3 +1,4 @@
+from PyQt5.QtWidgets import QMessageBox
 import numpy as np
 import struct
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -5,6 +6,7 @@ from Trace import Trace
 from Histogram import Histogram
 from collections import deque
 import ctypes
+
 
 # channel numbers
 GREEN = 2
@@ -27,6 +29,7 @@ class Model(QObject):
     coarse_graph_update = pyqtSignal()
     coarse_graph_show = pyqtSignal()
     label_update = pyqtSignal()
+    
 
     def __init__(self):
         super().__init__()
@@ -47,6 +50,9 @@ class Model(QObject):
         self.donor_counts = 0
         self.acceptor_counts = 0
         self.fret_counts = 0
+
+        self.msgBox = QMessageBox()
+        self.construct_msgBox()
     
     def change_trace_period(self, value):
         # if value is in range (0, 1], then set it to this value. Else keep it normal
@@ -67,13 +73,20 @@ class Model(QObject):
 
         # if len(buffer) is equal to the maximum buffer size, then pop up warning window
         if len(self.buffer) == MAX_BUFFER_SIZE and message_window_on == False:
-            ctypes.windll.user32.MessageBoxW(0, "WARNING_INPT_RATE_RATIO:\nThe pulse rate ratio R(ch)/R(sync) is over 5%\nfor at least one input channel.\nThis may cause pile-up and deadtime artifacts.", "WARNING", 0)
+            #ctypes.windll.user32.MessageBoxW(0, "WARNING_INPT_RATE_RATIO:\nThe pulse rate ratio R(ch)/R(sync) is over 5%\nfor at least one input channel.\nThis may cause pile-up and deadtime artifacts.", "WARNING", 0)
+            self.msgBox.setVisible(True)
             message_window_on = True
-        elif len(self.buffer) != MAX_BUFFER_SIZE and message_window_on == True:
+        elif message_window_on == True and len(self.buffer) != MAX_BUFFER_SIZE:
             message_window_on = False
         
         if self.buffer:
             self.update()
+
+    def construct_msgBox(self):
+        self.msgBox.setIcon(QMessageBox.Warning)
+        self.msgBox.setText("WARNING_INPT_RATE_RATIO:\nThe pulse rate ratio R(ch)/R(sync) is over 5%\nfor at least one input channel.\nThis may cause pile-up and deadtime artifacts.");
+        self.msgBox.setWindowTitle("WARNING")
+        self.msgBox.setStandardButtons(QMessageBox.Close)
 
     # Called after frameData gets to End-of-File (EOF). Processes 4-byte integers using bitwise operations.
     # Reads both overflows and photon channel signals. When a specific amount of overflows is obtained in total,

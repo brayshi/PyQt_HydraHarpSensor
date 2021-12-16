@@ -43,14 +43,19 @@ class View(QMainWindow):
         self.donor_end = pg.InfiniteLine(pos=35, angle=90, pen='g', movable=True, bounds=[0,75], hoverPen='y', label="d_end", name="green_end")
         self.donor_end.label.setPosition(0.95)
         self.acceptor_start = pg.InfiniteLine(pos=40, angle=90, pen='r', movable=True, bounds=[0,75], hoverPen='y', label="a_start", name="red_start")
-        self.acceptor_start.label.setPosition(0.95)
+        self.acceptor_start.label.setPosition(0.90)
         self.acceptor_end = pg.InfiniteLine(pos=65, angle=90, pen='r', movable=True, bounds=[0,75], hoverPen='y', label="a_end", name="red_end")
-        self.acceptor_end.label.setPosition(0.95)
+        self.acceptor_end.label.setPosition(0.90)
 
         self.hist.addItem(self.donor_start)
         self.hist.addItem(self.donor_end)
         self.hist.addItem(self.acceptor_start)
         self.hist.addItem(self.acceptor_end)
+
+        self.donor_start.label.setColor(QColor(0, 255, 0))
+        self.donor_end.label.setColor(QColor(0, 255, 0))
+        self.acceptor_start.label.setColor(QColor(255, 0, 0))
+        self.acceptor_end.label.setColor(QColor(255, 0, 0))
 
         # signals when the green lines have changed
         self.donor_start.sigPositionChangeFinished.connect(self.DA_start)
@@ -165,6 +170,8 @@ class View(QMainWindow):
         self.donorCountsLabel_2.setStyleSheet(colour[1])
         self.donor_start.setPen(colour[0])
         self.donor_end.setPen(colour[0])
+        self.donor_start.label.setColor(colour[0])
+        self.donor_end.label.setColor(colour[0])
 
     def choose_colour(self, value):
         # this is violet
@@ -172,7 +179,7 @@ class View(QMainWindow):
             colour = (QColor(170, 0, 255), 'color: rgb(170, 0, 255)')
         # this is blue
         elif (value == 1):
-            colour = (QColor(0, 0, 255), 'color: rgb(0, 0, 255)')
+            colour = (QColor(4, 51, 255), 'color: rgb(4, 51, 255)')
         # this is Cyan
         elif (value == 2):
             colour = (QColor(118, 214, 255), 'color: rgb(118, 214, 255)')
@@ -195,6 +202,8 @@ class View(QMainWindow):
         self.acceptorCountsLabel_2.setStyleSheet(colour[1])
         self.acceptor_start.setPen(colour[0])
         self.acceptor_end.setPen(colour[0])
+        self.acceptor_start.label.setColor(colour[0])
+        self.acceptor_end.label.setColor(colour[0])
 
 
     def change_fret_colour(self, value):
