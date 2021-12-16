@@ -105,7 +105,8 @@ def readHeader(inputfile):
     tagValues = [tagDataList[i][1] for i in range(0, len(tagDataList))]
 
     measDescRes = tagValues[tagNames.index("MeasDesc_Resolution")] # the resolution of the measurements being done for each dtime
+    syncRate = tagValues[tagNames.index("TTResult_SyncRate")] # the syncRate of the measurements being done within a period
 
     inputfile.seek(0, os.SEEK_END) #End-of-file. Next read will get to EOF.
     
-    return measDescRes
+    return (measDescRes, syncRate)

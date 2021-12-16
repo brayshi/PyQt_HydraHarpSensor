@@ -88,24 +88,25 @@ class Trace():
 
     # change the traces if enough time has elapsed according to the overflow count
     def change_traces(self):
-        self._period = np.arange(0, self.period_milliseconds / CONVERT_SECONDS, step=self.bin_size_milliseconds / CONVERT_SECONDS)
-        self._green_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)), dtype=np.uint32, order='C')
-        self._red_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)), dtype=np.uint32, order='C')
-        self._fret_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)), dtype=np.uint32, order='C')
+        self._period = np.arange(0, self._period_milliseconds / CONVERT_SECONDS + float(self._bin_size_milliseconds / CONVERT_SECONDS), step=float(self._bin_size_milliseconds / CONVERT_SECONDS))
+        self._green_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)) + 1, dtype=np.uint32, order='C')
+        self._red_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)) + 1, dtype=np.uint32, order='C')
+        self._fret_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)) + 1, dtype=np.uint32, order='C')
         self._max_height = 0
 
     def __init__(self):
         super().__init__()
 
+        self._prev_max_height = 0 # previous max height of the graph
         self._max_height = 0 # the max height of this graph
         self._period_milliseconds = 1000 # can only be in multiples of 100. i.e. 100, 200, 300, 400, ..., 900, 1000 (max)
         self._period_milliseconds_next = 1000 # the next period size in milliseconds that will be used
         self._bin_size_milliseconds = 1 # only 3 choices will be 1, 10, and 100 ms
         self._bin_size_milliseconds_next = 1 # the next bin size in milliseconds that will be used
-        self._period = np.arange(0, self._period_milliseconds / CONVERT_SECONDS, step=self._bin_size_milliseconds / CONVERT_SECONDS)
-        self._green_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)), dtype=np.uint32, order='C')
-        self._red_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)), dtype=np.uint32, order='C')
-        self._fret_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)), dtype=np.uint32, order='C')
+        self._period = np.arange(0, self._period_milliseconds / CONVERT_SECONDS + float(self._bin_size_milliseconds / CONVERT_SECONDS), step=float(self._bin_size_milliseconds / CONVERT_SECONDS))
+        self._green_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)) + 1, dtype=np.uint32, order='C')
+        self._red_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)) + 1, dtype=np.uint32, order='C')
+        self._fret_line = np.zeros(int(-(self._period_milliseconds//-self._bin_size_milliseconds)) + 1, dtype=np.uint32, order='C')
 
         # fret range
         self._DA_range = [1250, 8750]

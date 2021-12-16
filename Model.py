@@ -25,12 +25,14 @@ class Model(QObject):
     trace_update = pyqtSignal()
     hist_update  = pyqtSignal()
     coarse_graph_update = pyqtSignal()
+    coarse_graph_show = pyqtSignal()
+    label_update = pyqtSignal()
 
     def __init__(self):
         super().__init__()
         self.inputFile = None # this returns the opened up version of the file
         self.trace = Trace()
-        self.hist = Histogram(4*1e-12)
+        self.hist = Histogram(4*1e-12, 13333394)
 
         self.coarse_binning = None
         self.coarse_on = False
@@ -42,34 +44,15 @@ class Model(QObject):
         self.ofl = 0
         self.buffer = deque(maxlen=MAX_BUFFER_SIZE)
 
-    def change_trace_bin_size(self, value):
-        if value == 0:
-            # this is 1 ms
-            self.trace.bin_size_milliseconds_next = 1
-        elif value == 1:
-            # this is 10 ms
-            self.trace.bin_size_milliseconds_next = 10
-        elif value == 2:
-            # this is 100 ms
-            self.trace.bin_size_milliseconds_next = 100
-
+        self.donor_counts = 0
+        self.acceptor_counts = 0
+        self.fret_counts = 0
     
     def change_trace_period(self, value):
         # if value is in range (0, 1], then set it to this value. Else keep it normal
         new_period = int(value)
         if new_period > self.trace.bin_size_milliseconds and new_period <= 1000:
             self.trace.period_milliseconds_next = new_period
-    
-    def change_hist_bin_size(self, value):
-        if value == 0:
-            # this is 64 ps
-            self.hist.bin_size_picoseconds_next = 64
-        elif value == 1:
-            # this is 128 ps
-            self.hist.bin_size_picoseconds_next = 128
-        elif value == 2:
-            # this is 256 ps
-            self.hist.bin_size_picoseconds_next = 256
 
     # called by QTimer in PyQt_Application every 1 ms. Tails inputfile and saves its contents into circular buffer
     def frameData(self):
@@ -123,25 +106,30 @@ class Model(QObject):
                         if (self.coarse_binning and self.coarse_binning._coarse_finished == False):
                             self.coarse_ofl += nsync
 
-                if (self.coarse_ofl >= OVERFLOW_SECOND and self.coarse_binning._coarse_finished == False):
-                    if (self.coarse_on == True):    
-                        if (self.coarse_binning._max_height * 1.2 <= self.coarse_binning._green_line[self.coarse_indx]):
-                            self.coarse_binning._max_height = self.coarse_binning._green_line[self.coarse_indx]
+                if (self.coarse_binning and self.coarse_ofl >= OVERFLOW_SECOND * self.coarse_binning._bin_size_seconds and self.coarse_binning._coarse_finished == False):
+                    if (self.coarse_on == True):
+                        if (self.coarse_binning._max_height * 1.2 <= self.coarse_binning.donor_line[self.coarse_indx]):
+                            self.coarse_binning._max_height = self.coarse_binning.donor_line[self.coarse_indx]
                         self.coarse_graph_update.emit()
                     self.coarse_ofl = 0
                     self.coarse_indx += 1
-                    if (self.coarse_indx >= self.coarse_binning._seconds):
+                    if (self.coarse_indx > self.coarse_binning._seconds//self.coarse_binning._bin_size_seconds):
                         self.coarse_binning._coarse_finished = True
                 
                 if self.ofl >= trace_overflow * np.prod(self.trace.period.shape): # once the overflow amount is over a threshold,
                     # add the values into the graph's lists
                     # draw new trace frame
+                    self.trace._prev_max_height = self.trace._max_height
                     if (self.coarse_on == False):
                         self.trace_update.emit()
                     self.hist_update.emit()
+                    self.label_update.emit()
 
                     # reset the values, and finish the function call
                     self.ofl = 0
+                    self.donor_counts = 0
+                    self.acceptor_counts = 0
+                    self.fret_counts = 0
                     DA_start = self.trace._DA_range[0]
                     DA_end = self.trace._DA_range[1]
                     self.trace._fret_on = self.trace._fret_on_next
@@ -154,6 +142,7 @@ class Model(QObject):
                     if (self.hist.bin_size_picoseconds != self.hist.bin_size_picoseconds_next):
                         self.hist.bin_size_picoseconds = self.hist.bin_size_picoseconds_next
                         self.hist.change_hist()
+                    
 
             else: # regular input channel
                 # calculate indexes that the photons should be placed into
@@ -163,19 +152,22 @@ class Model(QObject):
                 if channel == GREEN:
                     self.trace.green_line[trace_indx] += 1
                     self.hist.green_bins[hist_indx] += 1
-                    if (self.coarse_binning and self.coarse_indx < self.coarse_binning._seconds):
-                        self.coarse_binning.green_line[self.coarse_indx] += 1
+                    self.donor_counts += 1
+                    if (self.coarse_binning and self.coarse_binning._coarse_finished == False):
+                        self.coarse_binning._donor_line[self.coarse_indx] += 1
                     if (self.trace.green_line[trace_indx] >= self.trace._max_height * 1.2):
                         self.trace._max_height = self.trace.green_line[trace_indx]
                 elif channel == RED:
                     # if the dtime is between the green range in the histogram, add to the fret instead of the red
-                    if DA_start <= dtime and dtime <= DA_end:
+                    if DA_start <= dtime and dtime <= DA_end and (self.trace._fret_on == True or self.coarse_binning):
+                        self.fret_counts += 1
                         if (self.trace._fret_on == True):
                             self.trace._fret_line[trace_indx] += 1
                         if (self.coarse_binning and self.coarse_binning._coarse_finished == False):
                             self.coarse_binning.fret_line[self.coarse_indx] += 1
                     else:
+                        self.acceptor_counts += 1
                         self.trace.red_line[trace_indx] += 1
                         if (self.coarse_binning and self.coarse_binning._coarse_finished == False):
-                            self.coarse_binning.red_line[self.coarse_indx] += 1
+                            self.coarse_binning._acceptor_line[self.coarse_indx] += 1
                     self.hist.red_bins[hist_indx] += 1

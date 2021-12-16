@@ -53,20 +53,21 @@ class Histogram:
 
     # refreshes the hist if the bin size has changed
     def change_hist(self):
-        binMultiple = int(-(self.bin_size_picoseconds // -(self.measDescRes * 1e12)))
-        num_bins = int(-(HIST_BIN_AMOUNT // -binMultiple))
-        self._period = np.linspace(0, HIST_BIN_AMOUNT * self.measDescRes * 1e9, num=num_bins, endpoint=True)
+        self._period_nanoseconds = float(1/self._syncRate)*1e9
+        if (self._measDescRes*1e12 > self.bin_size_picoseconds):
+            self.bin_size_picoseconds = self._measDescRes*1e12
+            self.bin_size_picoseconds_next = self.bin_size_picoseconds
+
+        num_bins = int(-(self._period_nanoseconds/(-self.bin_size_picoseconds*1e-3)))+1
+        self._period = np.linspace(0, self._period_nanoseconds, num=num_bins, endpoint=True)
         self._green_bins = np.zeros(num_bins, dtype=np.uint32, order='C')
         self._red_bins = np.zeros(num_bins, dtype=np.uint32, order='C')
 
-    def __init__(self, measDescRes):
+    def __init__(self, measDescRes, syncRate):
         self._height = 5 # this is the exponent for height in logs (ex: 10^self._height)
-        self._period_picoseconds = 100000 # will convert this to nanoseconds for period
+        self._measDescRes = measDescRes
+        self._syncRate = syncRate
         self._bin_size_picoseconds = 64 # can only be 16, 64, and 256
         self._bin_size_picoseconds_next = 64 # the next value for bin size that will be applied later
-        self._measDescRes = measDescRes
-        binMultiple = int(-(self.bin_size_picoseconds // -(self.measDescRes * 1e12)))
-        num_bins = int(-(HIST_BIN_AMOUNT // -binMultiple))
-        self._period = np.linspace(0, HIST_BIN_AMOUNT * self._measDescRes * 1e9, num=num_bins, endpoint=True)
-        self._green_bins = np.zeros(num_bins, dtype=np.uint32, order='C')
-        self._red_bins = np.zeros(num_bins, dtype=np.uint32, order='C')
+
+        self.change_hist()
