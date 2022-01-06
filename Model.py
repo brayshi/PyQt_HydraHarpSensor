@@ -5,7 +5,6 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from Trace import Trace
 from Histogram import Histogram
 from collections import deque
-import ctypes
 
 
 # channel numbers

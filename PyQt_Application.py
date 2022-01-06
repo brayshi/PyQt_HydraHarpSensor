@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import QApplication
 from pyqtgraph.Qt import QtCore, QtGui
 from Model import Model
 from View import View
-import sys
 
 class App(QApplication):
     def __init__(self, sys_argv):

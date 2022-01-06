@@ -5,7 +5,7 @@ import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui
 from pyqtgraph.functions import mkPen
 import ReadFile
-from CoarseBinning import CONVERT_SECONDS, CoarseBinning
+from CoarseBinning import CoarseBinning
 
 class View(QMainWindow):
     def __init__(self, model):
@@ -114,6 +114,8 @@ class View(QMainWindow):
         self.coarseBinLine.setText("1")
         self.coarseBinLine.setValidator(QIntValidator(parent=self))
         self.coarseBinLine.editingFinished.connect(self.change_coarse_bin_size)
+
+        
 
     # change file being tailed by model
     def change_file(self):
