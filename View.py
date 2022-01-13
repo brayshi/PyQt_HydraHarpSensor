@@ -1,6 +1,6 @@
 from PyQt5 import uic
 from PyQt5.QtGui import QColor, QIntValidator
-from PyQt5.QtWidgets import QFileDialog, QMainWindow
+from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui
 from pyqtgraph.functions import mkPen
@@ -15,6 +15,9 @@ class View(QMainWindow):
         self.win = QtGui.QWidget()
 
         self._model = model
+
+        self.msgBox = QMessageBox()
+        self.construct_msgBox()
 
         self.create_view()
 
@@ -266,10 +269,16 @@ class View(QMainWindow):
         # if this doesn't work, read the text from the sync Rate box
         else:
             self._model.hist._syncRate = int(self.syncRateLine.text())
-            print("had to read from the sync rate line edit")
+            self.msgBox.setVisible(True)
         self._model.hist.change_hist()
         self.histBinLine.setText(str(self._model.hist.bin_size_picoseconds))
         self.hist.setLabels(title='Histogram', left='photons per ' + str(self._model.hist._bin_size_picoseconds) + ' ps bin', bottom='time (ns)')
+
+    def construct_msgBox(self):
+        self.msgBox.setIcon(QMessageBox.Warning)
+        self.msgBox.setText("WARNING_SYNCRATE_INVALID:\nSync Rate is not present in header. Using SyncRate already in syncRate box")
+        self.msgBox.setWindowTitle("WARNING")
+        self.msgBox.setStandardButtons(QMessageBox.Close)
 
     # change trace period that will be displayed for the next frame
     def change_trace_period(self):

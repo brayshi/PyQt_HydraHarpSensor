@@ -83,7 +83,7 @@ class Model(QObject):
 
     def construct_msgBox(self):
         self.msgBox.setIcon(QMessageBox.Warning)
-        self.msgBox.setText("WARNING_INPT_RATE_RATIO:\nThe pulse rate ratio R(ch)/R(sync) is over 5%\nfor at least one input channel.\nThis may cause pile-up and deadtime artifacts.");
+        self.msgBox.setText("WARNING_INPT_RATE_RATIO:\nThe pulse rate ratio R(ch)/R(sync) is over 5%\nfor at least one input channel.\nThis may cause pile-up and deadtime artifacts.")
         self.msgBox.setWindowTitle("WARNING")
         self.msgBox.setStandardButtons(QMessageBox.Close)
 
