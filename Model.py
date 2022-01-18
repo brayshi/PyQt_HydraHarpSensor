@@ -44,6 +44,7 @@ class Model(QObject):
         self._scaling_on = False
 
         self.ofl = 0
+        self.seconds_ofl = 0
         self.buffer = deque(maxlen=MAX_BUFFER_SIZE)
 
         self.donor_counts = 0
@@ -120,8 +121,9 @@ class Model(QObject):
 
                 if (self.coarse_binning and self.coarse_ofl >= OVERFLOW_SECOND * self.coarse_binning._bin_size_seconds and self.coarse_binning._coarse_finished == False):
                     if (self.coarse_on == True):
-                        if (self.coarse_binning._max_height * 1.2 <= self.coarse_binning.donor_line[self.coarse_indx]):
-                            self.coarse_binning._max_height = self.coarse_binning.donor_line[self.coarse_indx]
+                        max_value = max(self.coarse_binning.donor_line[self.coarse_indx], self.coarse_binning.acceptor_line[self.coarse_indx], self.coarse_binning.fret_line[self.coarse_indx])
+                        if (self.coarse_binning._max_height * 1.2 <= max_value):
+                            self.coarse_binning._max_height = max_value
                         self.coarse_graph_update.emit()
                     self.coarse_ofl = 0
                     self.coarse_indx += 1
@@ -135,13 +137,19 @@ class Model(QObject):
                     if (self.coarse_on == False):
                         self.trace_update.emit()
                     self.hist_update.emit()
-                    self.label_update.emit()
 
                     # reset the values, and finish the function call
+                    self.seconds_ofl += self.ofl
                     self.ofl = 0
-                    self.donor_counts = 0
-                    self.acceptor_counts = 0
-                    self.fret_counts = 0
+
+                    # if it's been a second since the donor counts were updated, update the labels
+                    if (self.seconds_ofl >= OVERFLOW_SECOND):
+                        self.label_update.emit()
+                        self.seconds_ofl = 0
+                        self.donor_counts = 0
+                        self.acceptor_counts = 0
+                        self.fret_counts = 0
+                    
                     DA_start = self.trace._DA_range[0]
                     DA_end = self.trace._DA_range[1]
                     self.trace._fret_on = self.trace._fret_on_next
@@ -159,7 +167,7 @@ class Model(QObject):
             else: # regular input channel
                 # calculate indexes that the photons should be placed into
                 trace_indx = int(self.ofl // trace_overflow)
-                hist_indx = int((dtime * self.hist.measDescRes * 1e12)//self.hist.bin_size_picoseconds)-1
+                hist_indx = int((dtime * self.hist.measDescRes * 1e12)//self.hist.bin_size_picoseconds)-2
 
                 if channel == GREEN:
                     self.trace.green_line[trace_indx] += 1
@@ -175,11 +183,17 @@ class Model(QObject):
                         self.fret_counts += 1
                         if (self.trace._fret_on == True):
                             self.trace._fret_line[trace_indx] += 1
+                        else:
+                            self.trace.red_line[trace_indx] += 1
                         if (self.coarse_binning and self.coarse_binning._coarse_finished == False):
                             self.coarse_binning.fret_line[self.coarse_indx] += 1
+                        if (self.trace.red_line[trace_indx] >= self.trace._max_height * 1.2):
+                            self.trace._max_height = self.trace.red_line[trace_indx]
                     else:
                         self.acceptor_counts += 1
                         self.trace.red_line[trace_indx] += 1
                         if (self.coarse_binning and self.coarse_binning._coarse_finished == False):
                             self.coarse_binning._acceptor_line[self.coarse_indx] += 1
+                        if (self.trace.red_line[trace_indx] >= self.trace._max_height * 1.2):
+                            self.trace._max_height = self.trace.red_line[trace_indx]
                     self.hist.red_bins[hist_indx] += 1

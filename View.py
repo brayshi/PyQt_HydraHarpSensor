@@ -238,8 +238,10 @@ class View(QMainWindow):
 
     def change_hist_bin_size(self):
         value = int(self.histBinLine.text())
-        if (value < self._model.hist.measDescRes * 1e12):
-            value =int(self._model.hist.measDescRes * 1e12)
+        # if the value is below either the measDescRes (or less than 16) then set the valalue to this
+        max_value = max(self._model.hist.measDescRes * 1e12, 16)
+        if (value < max_value):
+            value = max_value
             self.histBinLine.setText(str(value))
         elif (value > 4096):
             self.histBinLine.setText("4096")
@@ -263,7 +265,7 @@ class View(QMainWindow):
         tuple_val = ReadFile.readHeader(self._model.inputFile)
         self._model.hist._measDescRes = tuple_val[0]
         # route #1: use the syncRate read from the header
-        if (tuple_val[1] != None and tuple_val[1] != 0):
+        if (tuple_val[1] != None and tuple_val[1] != 0 and tuple_val[1] != float('inf')):
             self._model.hist._syncRate = tuple_val[1]
             self.syncRateLine.setText(str(tuple_val[1]))
         # if this doesn't work, read the text from the sync Rate box
