@@ -239,7 +239,7 @@ class View(QMainWindow):
     def change_hist_bin_size(self):
         value = int(self.histBinLine.text())
         # if the value is below either the measDescRes (or less than 16) then set the valalue to this
-        max_value = max(self._model.hist.measDescRes * 1e12, 16)
+        max_value = max(int(self._model.hist.measDescRes * 1e12), 16)
         if (value < max_value):
             value = max_value
             self.histBinLine.setText(str(value))
