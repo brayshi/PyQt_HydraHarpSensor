@@ -167,7 +167,7 @@ class Model(QObject):
             else: # regular input channel
                 # calculate indexes that the photons should be placed into
                 trace_indx = int(self.ofl // trace_overflow)
-                hist_indx = int((dtime * self.hist.measDescRes * 1e12)//self.hist.bin_size_picoseconds)-2
+                hist_indx = int((dtime * self.hist.measDescRes * 1e12)/self.hist.bin_size_picoseconds)-1
 
                 if channel == GREEN:
                     self.trace.green_line[trace_indx] += 1
