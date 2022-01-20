@@ -273,6 +273,7 @@ class View(QMainWindow):
             self._model.hist._syncRate = int(self.syncRateLine.text())
             self.msgBox.setVisible(True)
         self._model.hist.change_hist()
+        self.hist.setXRange(0, self._model.hist._period_nanoseconds)
         self.histBinLine.setText(str(self._model.hist.bin_size_picoseconds))
         self.hist.setLabels(title='Histogram', left='photons per ' + str(self._model.hist._bin_size_picoseconds) + ' ps bin', bottom='time (ns)')
 
